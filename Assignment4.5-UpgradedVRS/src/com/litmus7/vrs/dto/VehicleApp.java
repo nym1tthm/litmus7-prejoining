@@ -18,7 +18,7 @@ public class VehicleApp {
         service.displayAllVehicles();
 
         Scanner scanner = new Scanner(System.in);
-        System.out.print("\nEnter brand or model to search: ");
+        System.out.print("\nEnter model to search: ");
         String keyword = scanner.nextLine();
         service.searchVehicles(keyword);
 
