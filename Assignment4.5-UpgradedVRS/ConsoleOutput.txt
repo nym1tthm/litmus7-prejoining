@@ -1,0 +1,75 @@
+Vehicles:
+
+Vehicle #1
+---Displaying car details---
+Brand :Toyota
+Model :Corolla
+Rental Price :45.5
+Status: available
+Number of doors :4
+Automatic :true
+
+Vehicle #2
+---Displaying bike details---
+Brand :Yamaha
+Model :R15
+Rental Price :30.0
+Status: available
+Has gear: true
+Engine capacity: 150cc
+
+Vehicle #3
+---Displaying car details---
+Brand :Ford
+Model :Focus
+Rental Price :50.0
+Status: available
+Number of doors :5
+Automatic :false
+
+Vehicle #4
+---Displaying bike details---
+Brand :Honda
+Model :CBR
+Rental Price :35.5
+Status: available
+Has gear: false
+Engine capacity: 250cc
+
+Vehicle #5
+---Displaying car details---
+Brand :Chevrolet
+Model :Malibu
+Rental Price :55.0
+Status: available
+Number of doors :4
+Automatic :true
+
+Vehicle #6
+---Displaying bike details---
+Brand :Suzuki
+Model :GSX
+Rental Price :40.0
+Status: available
+Has gear: true
+Engine capacity: 200cc
+
+
+Enter brand or model to search: Malibu
+---Displaying car details---
+Brand :Chevrolet
+Model :Malibu
+Rental Price :55.0
+Status: available
+Number of doors :4
+Automatic :true
+
+Total Rental Price of All Vehicles: $256.0
+Status updated for Vehicle #6
+---Displaying bike details---
+Brand :Suzuki
+Model :GSX
+Rental Price :40.0
+Status: rented
+Has gear: true
+Engine capacity: 200cc
