@@ -55,7 +55,7 @@ Has gear: true
 Engine capacity: 200cc
 
 
-Enter brand or model to search: Malibu
+Enter model to search: Malibu
 ---Displaying car details---
 Brand :Chevrolet
 Model :Malibu
