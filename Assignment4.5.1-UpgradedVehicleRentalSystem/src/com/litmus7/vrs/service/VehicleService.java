@@ -17,78 +17,86 @@ public class VehicleService {
 	VehicleFileDao dao = new VehicleFileDao();
 	List<Vehicle> vehicles = new ArrayList<>();
 	Map<Integer, Vehicle> vehicleMap = new HashMap<>();
-	
+
 	/*
-	 * @param fileName string of the txt file to be read
-	 * load vehicles using loadVehicleFromFile method in dao class and puts them into map<int,Vehicle>
+	 * @param fileName string of the txt file to be read load vehicles using
+	 * loadVehicleFromFile method in dao class and puts them into map<int,Vehicle>
 	 * return vehicle list
 	 */
 
 	public List<Vehicle> loadAllVehicles(String fileName) throws VehicleDataAccessException {
-        List<Vehicle> loadedVehicles = dao.loadVehiclesFromFile(fileName);
-        this.vehicles = loadedVehicles;
-        vehicleMap.clear();
-        int i = 1;
-        for (Vehicle v : vehicles) {
-            vehicleMap.put(i++, v);
-        }
-        return vehicles;
-    }
-	
+		List<Vehicle> loadedVehicles = dao.loadVehiclesFromFile(fileName);
+		this.vehicles = loadedVehicles;
+		vehicleMap.clear();
+		int i = 1;
+		for (Vehicle v : vehicles) {
+			vehicleMap.put(i++, v);
+		}
+		return vehicles;
+	}
 
 	/*
 	 * get all vehicles
 	 */
 	public List<Vehicle> getAllVehicles() {
-        return vehicles;
-    }
-	
+		return vehicles;
+	}
+
 	/*
 	 * add new vehicle
 	 */
-	 public void addNewVehicle(Vehicle vehicle) throws VehicleServiceException {
-	        if (vehicleMap.containsValue(vehicle)) {
-	            throw new VehicleServiceException("Cannot add duplicate vehicle: " + vehicle.getModel());
-	        }
-	        int newId = vehicleMap.size() + 1;
-	        vehicleMap.put(newId, vehicle);
-	        vehicles.add(vehicle);
-	    }
-	
+	public void addNewVehicle(Vehicle vehicle) throws VehicleServiceException {
+		if (vehicleMap.containsValue(vehicle)) {
+			throw new VehicleServiceException("Cannot add duplicate vehicle: " + vehicle.getModel());
+		}
+		int newId = vehicleMap.size() + 1;
+		vehicleMap.put(newId, vehicle);
+		vehicles.add(vehicle);
+	}
+
 	/*
 	 * rent a vehicle by vehicle number
+	 * 
 	 * @param vehicleNumber int to indicate vehicle to rent
 	 */
-	public void rentVehicle(int vehicleNumber) throws VehicleServiceException{
-        Vehicle v = vehicleMap.get(vehicleNumber);
-        if (v == null) {
-            throw new VehicleServiceException("Invalid vehicle number.");
-        }
-        if (!v.getRentalStatus()) {
-            throw new VehicleServiceException("Vehicle is already rented and not available.");
-        }
-        v.setRentalStatus(false);
+	public void rentVehicle(int vehicleNumber) throws VehicleServiceException {
+		try {
+			Vehicle v = vehicleMap.get(vehicleNumber);
+			if (v == null) {
+				throw new NullPointerException("Vehicle not found in the map.");
+			}
+			if (!v.getRentalStatus()) {
+				throw new IllegalStateException("Vehicle is already rented.");
+			}
+			v.setRentalStatus(false);
+		} catch (NullPointerException | IllegalStateException e) {
+			throw new VehicleServiceException("Failed to rent vehicle #" + vehicleNumber, e);
+		}
+	}
 
-    }
 	/*
 	 * return rented vehicle
+	 * 
 	 * @param vehicleNumber int to indicate vehicle to return
 	 */
 	public void returnVehicle(int vehicleNumber) throws VehicleServiceException {
-        Vehicle v = vehicleMap.get(vehicleNumber);
-        if (v == null) {
-            throw new VehicleServiceException("Vehicle not found: " + vehicleNumber);
-        }
-        if (v.getRentalStatus()) {
-            throw new VehicleServiceException("Vehicle is already marked as available.");
-        }
-        v.setRentalStatus(true);
-    }
-	
-	
+		try {
+			Vehicle v = vehicleMap.get(vehicleNumber);
+			if (v == null) {
+				throw new NullPointerException("Vehicle not found in the map.");
+			}
+			if (v.getRentalStatus()) {
+				throw new IllegalStateException("Vehicle is already marked as available.");
+			}
+			v.setRentalStatus(true);
+		} catch (NullPointerException | IllegalStateException e) {
+			throw new VehicleServiceException("Failed to return vehicle #" + vehicleNumber, e);
+		}
+	}
 
 	/*
-	 * Return a  vehicle details if user input model String is found
+	 * Return a vehicle details if user input model String is found
+	 * 
 	 * @param model String which is to be searched in the record
 	 */
 	public Vehicle searchVehicle(String searchModel) {
@@ -96,7 +104,7 @@ public class VehicleService {
 			if (v.getModel().equals(searchModel)) {
 				return v;
 			}
-		}	
+		}
 		return null;
 	}
 
@@ -110,7 +118,5 @@ public class VehicleService {
 		}
 		return total;
 	}
-	
-	
-	
+
 }
