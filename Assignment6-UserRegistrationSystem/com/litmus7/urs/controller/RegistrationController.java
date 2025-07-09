@@ -14,9 +14,9 @@ public class RegistrationController {
 	public Response<User> register(User user) {
 		Response<User> response = new Response<>();
 		try {
-			service.registerUser(user);
+			User savedUser = service.registerUser(user);
 			response.setStatusCode(Response.SUCCESS_REGISTRATION);
-			response.setData(user);
+			response.setData(savedUser);
 
 		} catch (InvalidUsernameException | InvalidEmailException | InvalidAgeException | WeakPasswordException e) {
 			response.setStatusCode(Response.ERROR_VALIDATION);

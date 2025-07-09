@@ -1,93 +1,61 @@
 package com.litmus7.urs.dao;
 
-import java.util.*;
-import com.litmus7.urs.dto.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import com.litmus7.urs.dto.User;
+import com.litmus7.urs.exception.DaoException;
+import com.litmus7.urs.util.DBUtil;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.*;
 
 public class UserDao {
-	public List<User> loadDataFromSql(){
-		List<User> userList = new ArrayList<>();
-		
-		String dburl = "jdbc:mysql://localhost:3306/UserRegistrationSys";
-        String user = "root";
-        String pass = "password";
 
-        Connection conn = null;
-        Statement stmt = null;
-        ResultSet rs = null;
-        
-        try {
-        	conn = DriverManager.getConnection(dburl,user,pass);
-        	stmt = conn.createStatement();
-        	rs = stmt.executeQuery("SELECT * FROM Users");
-        	
-        	while(rs.next()) {
-        		String username = rs.getString("username");
-        		int age = rs.getInt("age");
-                String email = rs.getString("email");
-                String password = rs.getString("password");
-                
-                User userObj = new User(username,age,email,password);
-                userList.add(userObj);
-                
-        	}
-        }catch (SQLException e) {
-        	e.printStackTrace();
-        }
-        finally {
-            try {
-            	if (rs != null) rs.close();
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }	
-        return userList;	
-        
-       
-	}
-	
-	public void saveUser(User userObj) {
-        String dburl = "jdbc:mysql://localhost:3306/UserRegistrationSys";
-        String user = "root";
-        String pass = "password";
+    private static final String INSERT_USER_SQL =
+        "INSERT INTO Users (username, age, email, password) VALUES (?, ?, ?, ?)";
+    private static final String SELECT_USER_BY_USERNAME =
+        "SELECT username,age,email,password FROM Users WHERE username = ?";
 
-        Connection conn = null;
-        Statement stmt = null;
 
-        try {
-            conn = DriverManager.getConnection(dburl, user, pass);
-            stmt = conn.createStatement();
-            String sql = String.format(
-                "INSERT INTO Users (username, age, email, password) VALUES ('%s', %d, '%s', '%s')",
-                userObj.getUsername(),
-                userObj.getAge(),
-                userObj.getEmail(),
-                userObj.getPassword()
-            );
-            stmt.executeUpdate(sql);
+    public User saveUser(User user) throws DaoException {
+        try (Connection connection = DBUtil.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(INSERT_USER_SQL)) {
+
+            preparedStatement.setString(1, user.getUsername());
+            preparedStatement.setInt(2, user.getAge());
+            preparedStatement.setString(3, user.getEmail());
+            preparedStatement.setString(4, user.getPassword());
+            preparedStatement.executeUpdate();
+
+            return user;
+
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            throw new DaoException("Error saving user", e);
         }
     }
+
+    public User findUserByUsername(String username) throws DaoException {
+        try (Connection connection = DBUtil.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(SELECT_USER_BY_USERNAME)) {
+
+            preparedStatement.setString(1, username);
+
+            try (ResultSet resultset = preparedStatement.executeQuery()) {
+                if (resultset.next()) {
+                    return new User(
+                        resultset.getString("username"),
+                        resultset.getInt("age"),
+                        resultset.getString("email"),
+                        resultset.getString("password")
+                    );
+                } else {
+                    return null; 
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new DaoException("Error finding user by username", e);
+        }
+    }
+
+
+       
+    
 }
